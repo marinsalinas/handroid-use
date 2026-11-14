@@ -6,6 +6,27 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-14
+
+### Added
+- `push` and `pull` copy whole folders:
+  - Only missing or changed files are copied; `--checksum` compares hashes, not just sizes.
+  - Every copied file is sha256-verified.
+  - An interrupted copy resumes when the command is run again.
+  - Nothing is ever deleted on either side.
+  - `--dry-run` shows the plan.
+  - Copies into Android/data run `chmod 660` and `sync` on the copied files.
+- `backup <device folder> [--to dir]`: a dated, verified snapshot with `SHA256SUMS`.
+- `record [file.mp4] [seconds] [--display <id>]`: screen video through screenrecord, then pulled
+  and removed from the device.
+- `handroid mcp`: an MCP server over stdio with no dependencies.
+  - It exposes 23 tools; screenshots are returned as image content.
+  - Tools run the CLI with an argument array, values after `--`.
+
+### Fixed
+- sha256 of local files is streamed, so `install`, `push` and `pull` work with files larger than
+  2 GB. Before, the whole file was read into memory.
+
 ## [0.3.0] - 2026-11-14
 
 ### Added
@@ -85,7 +106,8 @@ First public release.
 - A USB-connected device with wireless debugging on was listed as a LAN device to connect to.
 - Linux "no permissions" devices were parsed as state `no`; they now get a udev hint.
 
-[Unreleased]: https://github.com/marinsalinas/handroid-use/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/marinsalinas/handroid-use/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/marinsalinas/handroid-use/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/marinsalinas/handroid-use/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/marinsalinas/handroid-use/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/marinsalinas/handroid-use/releases/tag/v0.1.0

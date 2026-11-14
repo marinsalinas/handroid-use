@@ -125,6 +125,20 @@ belong to the user. Explain them and let the user decide.
 - `push <local> <remote>` verifies sha256 on the device. Under `Android/data/<pkg>/` it also runs
   `sync` and `chmod 660`, so the owning app can read the file.
 - `pull <remote> [local]`.
+- Both take **folders**. Only missing files, or files whose size differs, are copied (`--checksum`
+  also compares hashes). Every copied file is sha256-verified, and nothing is deleted on either side.
+  An interrupted copy resumes when you run the same command again. Run `--dry-run` first for large
+  copies and tell the user the size.
+- `backup <device folder> [--to <dir>]` before anything risky to an app's data: updating an emulator,
+  moving saves, changing profiles. It writes a dated folder with `SHA256SUMS` and never changes the
+  device. Ask the user, or read the app's settings, for where its saves live; don't guess.
+- `record [file.mp4] [seconds] [--display <id>]` captures a video of a screen, for bug reports or
+  to show a result.
+
+## MCP
+
+The same commands are available as MCP tools through `handroid mcp`. If those tools are connected,
+you can use them instead of the shell. The rules below apply either way.
 
 ## Rules
 

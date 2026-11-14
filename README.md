@@ -92,6 +92,20 @@ git clone https://github.com/marinsalinas/handroid-use $HOME\src\handroid-use
 New-Item -ItemType Junction -Path $HOME\.claude\skills\handroid-use -Target $HOME\src\handroid-use\skills\handroid-use
 ```
 
+### MCP server
+
+`handroid mcp` serves every command as an MCP tool over stdio. Screenshots come back as images the
+model can see. Any MCP client can use it, not only Claude Code:
+
+```
+claude mcp add handroid --scope user -- npx -y github:marinsalinas/handroid-use mcp
+# or, from a clone with npm link:
+claude mcp add handroid --scope user -- handroid mcp
+```
+
+Each tool runs the CLI with an argument array, never a shell string. Values always come after `--`,
+so a value can never turn into a flag. The CLI's validation and exit codes apply unchanged.
+
 ### Recommended companion: mobile-mcp
 
 [mobile-mcp](https://github.com/mobile-next/mobile-mcp) is a general-purpose mobile automation MCP
@@ -117,7 +131,9 @@ claude mcp add mobile-mcp --scope user -- npx -y @mobilenext/mobile-mcp@latest
 | `wait-for text|gone|app|awake|rendering ...` | Poll until a condition holds (`--timeout`), instead of sleeping |
 | `apps [filter]` | Third-party packages with versions |
 | `install <apk> [--sha256 hex]` | Hash-checked install |
-| `push <local> <remote>` / `pull` | Hash-verified copy; app-private folders get `sync` and `chmod 660` |
+| `push <local> <remote>` / `pull <remote> [local]` | Files or whole folders. Folders copy only missing or changed files (`--checksum` compares hashes), verify sha256, resume if interrupted, and never delete. `--dry-run` shows the plan. App-private folders get `sync` and `chmod 660` |
+| `backup <remote folder> [--to dir]` | Dated, hash-verified snapshot of a device folder (an emulator's saves, for example) with a `SHA256SUMS` file |
+| `record [file.mp4] [s] [--display id]` | Screen video, up to 180 s |
 | `thermals` | Maximum CPU/GPU/battery temperature and battery draw |
 | `fps <pkg> [s] [--wait] [--json]` | Real presented fps, 1%/0.1% lows, worst frame, hitches |
 | `bench <pkg> [min] [--interval s] [--csv f] [--json]` | fps + temperatures + battery over time; flags thermal throttling |

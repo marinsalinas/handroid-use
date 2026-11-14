@@ -39,6 +39,11 @@ handroid doctor app:xyz.blacksheep.mjolnir app:rip.moth.cocoonshell phantom stor
   reports as ok.
 - Storage near 90% is common: ROM sets and PC games are large.
 
+- Back up an emulator's saves before updating it or moving profiles:
+  `backup <its save folder> --to <somewhere on the PC>`. Emulators keep saves in different places,
+  and some use a user folder separate from the ROM library (Azahar, for example). Confirm the path in
+  the emulator's settings first.
+
 ## Things that break the device
 - **Keymapping/input services** (for example Mjolnir, or AYN's own key-mapper). Never force-stop
   them. A crash loop in the key filter adds input lag to every emulator until the device reboots.

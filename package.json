@@ -1,6 +1,6 @@
 {
   "name": "handroid-use",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Computer use for Android handhelds: let AI agents see, drive and benchmark your Thor, Retroid or Odin. A dependency-free, cross-platform adb CLI plus a Claude Code skill.",
   "type": "module",
   "bin": {
