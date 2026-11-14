@@ -1,0 +1,28 @@
+@@dinfo
+    mOverrideDisplayInfo=DisplayInfo{"Built-in Screen", displayId 0", displayGroupId 0, FLAG_SECURE, FLAG_SUPPORTS_PROTECTED_BUFFERS, FLAG_TRUSTED, real 1920 x 1080, largest app 1920 x 1865, smallest app 1080 x 1025, appVsyncOff 1000000, presDeadline 11333333, mode 2, defaultMode 2, rotation 1, state ON, type INTERNAL, uniqueId "local:4619827259835644675", app 1920 x 1080, density 369 (369.0 x 369.0) dpi}
+    mOverrideDisplayInfo=DisplayInfo{"Screen-2", displayId 4", displayGroupId 0, FLAG_SECURE, FLAG_SUPPORTS_PROTECTED_BUFFERS, FLAG_PRESENTATION, FLAG_TRUSTED, real 1240 x 1080, largest app 1240 x 1185, smallest app 1080 x 1025, appVsyncOff 1000000, presDeadline 11333333, mode 3, defaultMode 3, rotation 1, state ON, type INTERNAL, uniqueId "local:4619827259835644676", app 1240 x 1080, density 369 (369.0 x 369.0) dpi}
+@@focused
+  mTopFocusedDisplayId=4
+@@acts
+Display #4 (activities from top to bottom):
+      topResumedActivity=ActivityRecord{ac04095 u0 rip.moth.cocoonshell/.ExternalDisplayActivity} t287}
+Display #0 (activities from top to bottom):
+    topResumedActivity=ActivityRecord{1e1a84d u0 com.android.settings/.Settings} t291}
+@@wake
+  mWakefulness=Awake
+@@wins
+  Window #2 Window{87eddb9 u0 NavigationBar4}:
+    mDisplayId=4 rootTaskId=286 mSession=Session{1970872 2518:u0a10090} mClient=android.os.BinderProxy@cd43803
+    isVisible=false
+  Window #3 Window{f797b68 u0 com.droiddeck.launcher}:
+    mDisplayId=4 rootTaskId=286 mSession=Session{ca83228 3969:u0a10118} mClient=android.os.BinderProxy@74fed49
+    isVisible=true
+  Window #4 Window{294536f u0 rip.moth.cocoonshell/rip.moth.cocoonshell.ExternalDisplayActivity}:
+    mDisplayId=4 rootTaskId=286 mSession=Session{ca83228 3969:u0a10118} mClient=android.os.BinderProxy@74fed49
+    isVisible=true
+  Window #20 Window{25109b9 u0 com.droiddeck.launcher/com.droiddeck.launcher.SessionActivity}:
+    mDisplayId=0 mSession=Session{f39a2fb 2668:1000} mClient=android.os.BinderProxy@5426765
+    isVisible=false
+  Window #22 Window{5b21cdd u0 com.android.settings/com.android.settings.Settings}:
+    mDisplayId=0 mSession=Session{f39a2fb 2668:1000} mClient=android.os.BinderProxy@5426766
+    isVisible=true

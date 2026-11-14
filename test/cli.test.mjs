@@ -427,3 +427,82 @@ test("unknown command exits 1; no command shows help and exits 0", () => {
   assert.equal(r.code, 0);
   assert.match(r.stdout, /discover \[--json\]/);
 });
+
+// ---------- dual-screen devices ----------
+
+const ctxRule = { args: "shell echo '@@dinfo'", stdoutFile: "display-context-thor.txt" };
+const xmlRoot = (pkg, w, h, inner) => `<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><hierarchy rotation="1"><node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="${pkg}" content-desc="" clickable="false" enabled="true" bounds="[0,0][${w},${h}]">${inner}</node></hierarchy>`;
+const node = (text, b, clickable = true) => `<node index="1" text="${text}" resource-id="" class="android.widget.TextView" package="x" content-desc="" clickable="${clickable}" enabled="true" bounds="${b}" />`;
+
+test("displays: table with logical + physical ids, focus and top app; --json", () => {
+  let r = runCli(["displays"], { rules: [...singleDevice, ctxRule] });
+  assert.equal(r.code, 0, r.stderr);
+  assert.match(r.stdout, /^4 +4619827259835644676 +Screen-2 +1240x1080 +\* +rip\.moth\.cocoonshell/m);
+  assert.match(r.stdout, /take --display <id> \(logical or physical\)/);
+  r = runCli(["displays", "--json"], { rules: [...singleDevice, ctxRule] });
+  const j = JSON.parse(r.stdout);
+  assert.equal(j.focused, 4);
+  assert.deepEqual(j.displays.map(d => d.id), [0, 4]);
+  assert.equal(j.windows, undefined);
+});
+
+test("shot --display <logical id> captures with the physical id", () => {
+  const dir = tmpDir();
+  const out = path.join(dir, "bottom.png");
+  const r = runCli(["shot", out, "--display", "4"], { rules: [...singleDevice, ctxRule,
+    { args: `^-s ${S} exec-out screencap -d 4619827259835644676 -p$`, stdoutFile: "screencap.png" }] });
+  assert.equal(r.code, 0, r.stderr);
+  assert.equal(r.stdout.trim(), out);
+  fs.rmSync(dir, { recursive: true, force: true });
+  const bad = runCli(["shot", "--display", "9"], { rules: [...singleDevice, ctxRule] });
+  assert.equal(bad.code, 1);
+  assert.match(bad.stderr, /no display "9"/);
+});
+
+test("tap/swipe/key/type --display send input to that screen (input -d <logical>)", () => {
+  const rules = [...singleDevice, ctxRule, { args: "shell input -d 4 ", stdout: "" }];
+  let r = runCli(["tap", "100", "200", "--display", "4619827259835644676"], { rules });
+  assert.equal(r.code, 0, r.stderr);
+  assert.ok(has(r.calls, ["-s", S, "shell", "input", "-d", "4", "tap", "100", "200"]), JSON.stringify(r.calls));
+  assert.equal(r.stdout.trim(), "tap 100,200 on display 4");
+  r = runCli(["swipe", "1", "2", "3", "4", "--display", "4"], { rules });
+  assert.ok(has(r.calls, ["-s", S, "shell", "input", "-d", "4", "swipe", "1", "2", "3", "4", "300"]));
+  r = runCli(["key", "back", "--display", "4"], { rules });
+  assert.ok(has(r.calls, ["-s", S, "shell", "input", "-d", "4", "keyevent", "KEYCODE_BACK"]));
+  r = runCli(["type", "hi", "--display", "4"], { rules });
+  assert.ok(has(r.calls, ["-s", S, "shell", "input", "-d", "4", "text", "'hi'"]));
+});
+
+test('ui and tap "text" use the display the UI tree came from, even when another screen has focus', () => {
+  const xml = xmlRoot("com.android.settings", 1920, 1080, node("Battery", "[0,560][480,648]"));
+  const rules = [...singleDevice, ctxRule, { args: "exec-out uiautomator dump", stdout: xml }, { args: "shell input ", stdout: "" }];
+  let r = runCli(["ui"], { rules });
+  assert.equal(r.code, 0, r.stderr);
+  assert.match(r.stdout, /^# display 0 "Built-in Screen" 1920x1080: tap "text" targets this screen; for coordinates add --display 0$/m);
+  r = runCli(["tap", "Battery"], { rules });
+  assert.equal(r.code, 0, r.stderr);
+  assert.ok(has(r.calls, ["-s", S, "shell", "input", "-d", "0", "tap", "240", "604"]), JSON.stringify(r.calls));
+  assert.match(r.stdout, /tap "Battery" at 240,604 on display 0/);
+  r = runCli(["tap", "Battery", "--display", "4"], { rules });
+  assert.equal(r.code, 1);
+  assert.match(r.stderr, /use coordinates with --display/);
+});
+
+test("ui on a sleeping screen says so instead of uiautomator's idle-state error", () => {
+  const asleep = fixture("display-context-thor.txt").replace("mWakefulness=Awake", "mWakefulness=Asleep");
+  const r = runCli(["ui"], { rules: [...singleDevice, { args: "shell echo '@@dinfo'", stdout: asleep }, { args: "exec-out uiautomator", stdoutFile: "ui-error.txt" }] });
+  assert.equal(r.code, 1);
+  assert.match(r.stderr, /the screen is asleep: run {2}handroid key WAKEUP {2}first/);
+});
+
+test("fps ignores frames rendered before the measurement started", () => {
+  // An idle menu: the buffer still holds 127 frames from a minute ago, then 3 s of 60 fps.
+  const old = stream(T0 - 60e9, 127, 1000 / 120);
+  const fresh = stream(T0 + 100e6, 180, 1000 / 60);
+  const windows = sampleWindows([...old, ...fresh], T0, 9);
+  const sampled = windows.map(w => latencyDump(w) + "---\n").join("");
+  const r = runCli(["fps", "droiddeck", "3"], { rules: [...singleDevice, layerRule, { args: "while", stdout: sampled }, thermalsRule] });
+  assert.equal(r.code, 0, r.stderr);
+  assert.match(r.stdout, /^avg fps: {3}60\.0 /m);
+  assert.match(r.stdout, /hitches >50 ms: 0$/m);
+});

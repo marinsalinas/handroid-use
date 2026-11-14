@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { adbCandidates, findAdb } from "../lib/adb.mjs";
+import { adbCandidates, findAdb, msysToWindows } from "../lib/adb.mjs";
 import { CliError } from "../lib/errors.mjs";
 
 test("findAdb: ADB wins when it exists", () => {
-  assert.equal(findAdb({ env: { ADB: "/x/adb" }, exists: f => f === "/x/adb" }), "/x/adb");
+  assert.equal(findAdb({ env: { ADB: "/x/adb" }, platform: "linux", exists: f => f === "/x/adb" }), "/x/adb");
 });
 
 test("findAdb: ADB set to a missing file is an error (no silent fallback)", () => {
@@ -43,4 +43,12 @@ test("adbCandidates: Windows uses adb.exe, ';' PATH (any case), quoted dirs, SDK
 test("adbCandidates: unreadable winget folder is fine", () => {
   const c = adbCandidates({ env: {}, platform: "win32", home: "C:\\Users\\u", readdir: () => { throw new Error("ENOENT"); } });
   assert.deepEqual(c, ["C:\\Users\\u\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe"]);
+});
+
+test("msysToWindows: Git Bash /c/... paths work for ADB on Windows only", () => {
+  assert.equal(msysToWindows("/c/Users/u/platform-tools/adb.exe", "win32"), "C:/Users/u/platform-tools/adb.exe");
+  assert.equal(msysToWindows("/cygdrive/d/sdk/adb.exe", "win32"), "D:/sdk/adb.exe");
+  assert.equal(msysToWindows(String.raw`C:\sdk\adb.exe`, "win32"), String.raw`C:\sdk\adb.exe`);
+  assert.equal(msysToWindows("/c/Users/u/adb", "linux"), "/c/Users/u/adb");
+  assert.equal(findAdb({ env: { ADB: "/c/sdk/adb.exe" }, platform: "win32", exists: f => f === "C:/sdk/adb.exe" }), "C:/sdk/adb.exe");
 });

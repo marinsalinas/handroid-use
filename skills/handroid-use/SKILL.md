@@ -47,8 +47,21 @@ Every command exits nonzero on failure with the reason on stderr; check it.
 3. **Verify.** See again after every action. Screens change asynchronously; wait 2–5 s after
    launching an app or after a tap that loads something.
 
-Multi-screen devices: run `handroid displays`, then `shot --display <id>`. Input goes to the default
-display unless the app is on the other one.
+Screen sleep: if `ui` says the screen is asleep, run `handroid key WAKEUP`. Many handhelds sleep after
+60 s, so a long pause between actions puts it back to sleep.
+
+### Multi-screen devices (dual-screen handhelds)
+- `handroid displays` lists every screen: logical id, physical id, size, which one has focus (`*`)
+  and the app on top. `--display` accepts either id.
+- `ui` dumps **one** window, not always the focused screen. Its first line says which screen the tree
+  came from (`# display 4 "Screen-2" 1240x1080 ...`). `tap "<text>"` sends the tap to that screen.
+- Coordinates read from a screenshot belong to the screen you captured: `shot --display 4` then
+  `tap <x> <y> --display 4`. Without `--display`, taps and swipes go to display 0 and keys go to
+  the focused screen.
+- Touching a screen moves focus to it, and `key BACK`/`HOME` act on the focused screen. Pass
+  `--display` to be sure.
+- Overlays that hide their controls after about a second (picture-in-picture, video players) need
+  both taps in one go. Use `handroid tap` to show the controls, then tap the control right away.
 
 ## Measuring performance
 

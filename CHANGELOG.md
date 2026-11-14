@@ -6,6 +6,26 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-14
+
+Tested interactively on an AYN Thor (two screens, Android 13).
+
+### Added
+- Dual-screen support:
+  - `displays` shows each screen's logical and physical id, size, focus and top activity (`--json` too).
+  - `tap`, `swipe`, `key` and `type` take `--display <id>`.
+  - `shot --display` accepts the logical id as well as the physical one.
+- `ui` prints which screen its tree came from on multi-screen devices.
+- `ui` and `tap "text"` say "the screen is asleep" instead of uiautomator's "could not get idle state".
+
+### Fixed
+- `tap "text"` on a dual-screen device tapped display 0 even when the tree came from the other screen.
+  The tree's screen is now worked out from its root window (size and package), because uiautomator
+  does not always dump the focused screen.
+- `fps` on a mostly static app counted frames from long before the measurement. One run reported
+  "42 s measured" for 5 s. The first sample is now only a baseline.
+- `ADB=/c/Users/...` (Git Bash style) now works on Windows.
+
 ## [0.1.0] - 2026-11-14
 
 First public release.
@@ -46,5 +66,6 @@ First public release.
 - A USB-connected device with wireless debugging on was listed as a LAN device to connect to.
 - Linux "no permissions" devices were parsed as state `no`; they now get a udev hint.
 
-[Unreleased]: https://github.com/marinsalinas/handroid-use/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/marinsalinas/handroid-use/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/marinsalinas/handroid-use/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/marinsalinas/handroid-use/releases/tag/v0.1.0

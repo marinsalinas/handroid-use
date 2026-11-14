@@ -5,7 +5,22 @@ Learned on a Thor Max (Snapdragon 8 Gen 2 = QCS8550, Adreno 740, Android 13, two
 ## Hardware and identification
 - `discover` shows `AYN Thor`, `QTI QCS8550`, `Adreno (TM) 740` and **2 displays**: the top 1080p
   screen and the bottom touch screen.
-- Use `displays` to get the ids, then `shot --display <id>` for the other screen. A plain `shot` captures the default display.
+- `displays` on a Thor (Android 13), with the device in landscape:
+
+  ```
+  id  physical             name             size       focus  top activity
+  0   46309464418585xxxxx  Built-in Screen  1920x1080         com.droiddeck.launcher/.SessionActivity
+  4   46309464822881xxxxx  Screen-2         1240x1080  *      rip.moth.cocoonshell/.ExternalDisplayActivity
+  ```
+
+  The top screen is logical display 0 and the bottom one is **4** (not 1). `screencap` needs the
+  long physical id, while `input` needs the logical one; handroid maps between them.
+- `ui` can return the bottom screen's tree while the top screen has the game. Check the `# display`
+  header before tapping coordinates from it.
+- AYN's **anti-image-retention pixel refresh** sometimes covers both screens with noise for about 10 s,
+  showing a "tap to exit" countdown. Wait it out; screenshots taken during it show only noise.
+- The screen sleeps after 60 s of no input by default. `key WAKEUP` brings it back; there is no
+  lock screen to clear.
 - Thermal zones are Qualcomm-style:
   - `cpu-0-*`: efficiency cores.
   - `cpu-1-*`: performance and prime cores.
@@ -31,8 +46,15 @@ Learned on a Thor Max (Snapdragon 8 Gen 2 = QCS8550, Adreno 740, Android 13, two
   `push` command does both) or the app may not see the file.
 
 ## Emulators and PC-game layers (what was observed)
-- **GPU-drawn UIs**: `ui` returns nothing useful in DroidDeck, Steam Big Picture, Eden and most
-  emulators while in game. Use `shot` and read coordinates from the image.
+- **GPU-drawn UIs**: `ui` returns nothing useful in Steam Big Picture, Eden and most emulators while
+  in game. Use `shot` and read coordinates from the image.
+  - The UI around them is accessible: DroidDeck's controller overlay on the bottom screen (Close,
+    Swap screens, Gamepad/Grips/trackpads, L4–R5) and Cocoon's launcher both have full `ui` trees.
+- **DroidDeck picture-in-picture**: pressing HOME on the top screen shrinks the Steam session into a
+  PiP window. To restore it, tap the PiP window, then tap the expand icon in its centre within about
+  a second.
+- `fps` on Steam Big Picture's menus reports "no new frames": gamescope only presents when something
+  changes. Measure in game.
 - **Qualcomm's stock Adreno 740 driver** (v676) works with Turnip-based layers. DroidDeck and
   GameNative use Mesa Turnip, not the Qualcomm driver.
   - Native-port apps that load newer Qualcomm drivers (v8xx) can render incorrectly on the 740.

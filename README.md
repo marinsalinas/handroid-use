@@ -21,7 +21,9 @@ generic tools fall short:
   measurement itself never invents hitches.
 - **GPU-drawn game screens.** Games, emulators and Steam Big Picture have no UI tree; the agent is told
   to fall back to screenshots and coordinates.
-- **Multi-display devices.** Dual-screen handhelds such as the Thor: list displays and capture either one.
+- **Multi-display devices.** Dual-screen handhelds such as the Thor: list the screens with their focus
+  and top app, capture either one and send input to either one. `ui` says which screen its tree came
+  from, and `tap "text"` taps on that screen.
 - **Hash-verified file copies.** Every `push` is checked by sha256 on the device; app-private folders
   get the `sync` + `chmod 660` their app needs; `install` refuses an APK whose hash does not match.
 - **Safety rules for agents.** Don't kill keymappers or input services, leave system settings and
@@ -106,11 +108,11 @@ claude mcp add mobile-mcp --scope user -- npx -y @mobilenext/mobile-mcp@latest
 | `discover [--json]` | Every device adb sees (USB and Wi-Fi), with model, Android, SoC/GPU, displays, battery and free space. Also lists wireless-debugging devices on the LAN |
 | `connect <ip:port>` / `pair <ip:port> <code>` | Attach a wireless-debugging device |
 | `status` | Foreground app, screen state, battery, storage |
-| `displays` | Display ids for multi-screen devices |
+| `displays [--json]` | Every screen: logical and physical id, size, focus, top app |
 | `shot [file] [--display id]` | Screenshot (PNG at native resolution) |
 | `ui [--all]` | Compact UI tree: text, description, tappable, centre |
 | `tap <x> <y>` / `tap "<text>"` | Tap by coordinates or by visible text |
-| `swipe`, `key`, `type`, `launch` | Input and app launch |
+| `swipe`, `key`, `type`, `launch` | Input and app launch; `tap`/`swipe`/`key`/`type` take `--display <id>` |
 | `apps [filter]` | Third-party packages with versions |
 | `install <apk> [--sha256 hex]` | Hash-checked install |
 | `push <local> <remote>` / `pull` | Hash-verified copy; app-private folders get `sync` and `chmod 660` |
