@@ -1,0 +1,31 @@
+Display 0 name="Built-in Screen"#3
+com.android.systemui.wallpapers.ImageWallpaper#107
+DefaultTaskDisplayArea#9
+Task=297#3187
+f781375 ActivityRecordInputSink rip.moth.cocoonshell/.MainActivity#3196
+ActivityRecord{9c371f1 u0 rip.moth.cocoonshell/.MainActivity}#3189
+4f4d4c8 rip.moth.cocoonshell/rip.moth.cocoonshell.MainActivity#3192
+Task=291#2852
+41c897c ActivityRecordInputSink com.droiddeck.launcher/.FrontEndActivity#2860
+ActivityRecord{5b46c8b u0 com.droiddeck.launcher/.MainActivity}#2853
+511c888 com.droiddeck.launcher/com.droiddeck.launcher.MainActivity#2865
+7ea1377 ActivityRecordInputSink com.droiddeck.launcher/.SessionActivity#3288
+ActivityRecord{1e1a84d u0 com.droiddeck.launcher/.SessionActivity}#3275
+25109b9 com.droiddeck.launcher/com.droiddeck.launcher.SessionActivity#3279
+ImeContainer#12
+46a31e0 StatusBar#98
+2eafd08 NavigationBar0#88
+ColorFade#3344
+ColorFade BLAST#3345
+Display 4 name="Screen-2"#45
+DefaultTaskDisplayArea#49
+Task=287#2458
+c90bd9e ActivityRecordInputSink rip.moth.cocoonshell/.ExternalDisplayActivity#2460
+ActivityRecord{ac04095 u0 rip.moth.cocoonshell/.ExternalDisplayActivity}#2459
+294536f rip.moth.cocoonshell/rip.moth.cocoonshell.ExternalDisplayActivity#2461
+WindowToken{8bc4426 type=2037 android.os.BinderProxy@ff9fa6f}#3276
+f797b68 com.droiddeck.launcher#3277
+#3280
+87eddb9 NavigationBar4#94
+ColorFade#3346
+ColorFade BLAST#3347

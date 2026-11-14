@@ -1,0 +1,3 @@
+List of devices attached
+ABC123XYZ              device usb:1-1 product:kalama model:AYN_Thor device:kalama transport_id:17
+

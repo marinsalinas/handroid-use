@@ -1,0 +1,5 @@
+List of devices attached
+ABC123XYZ              device usb:1-1 product:kalama model:AYN_Thor device:kalama transport_id:17
+192.168.1.50:5555      device product:BRAVIA_UR2 model:BRAVIA_4K_UR2 device:BRAVIA_UR2 transport_id:21
+adb-DEF456UVW-Ab1Cd2._adb-tls-connect._tcp device product:panther model:Pixel_7 device:panther transport_id:23
+

@@ -1,0 +1,3 @@
+List of devices attached
+ABC123XYZ              unauthorized usb:1-1 transport_id:4
+

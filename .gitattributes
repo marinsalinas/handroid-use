@@ -1,0 +1,4 @@
+* text=auto eol=lf
+*.png binary
+# fixtures are byte-exact captures (some have CRLF from adb on Windows)
+test/fixtures/** -text

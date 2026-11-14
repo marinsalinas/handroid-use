@@ -1,0 +1,1 @@
+  mCurrentFocus=Window{4f2a1c u0 com.droiddeck.launcher/com.droiddeck.launcher.SessionActivity}

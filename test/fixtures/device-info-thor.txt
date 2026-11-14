@@ -1,0 +1,27 @@
+@@manufacturer
+AYN
+@@model
+AYN Thor
+@@android
+13
+@@sdk
+33
+@@socManufacturer
+QTI
+@@socModel
+QCS8550
+@@platform
+kalama
+@@abi
+arm64-v8a
+@@gles
+GLES: Qualcomm, Adreno (TM) 740, OpenGL ES 3.2 V@0676.53 (GIT@69e13475cb, I1df7ad3aa9, 1703680572) (Date:12/27/23)
+@@wmSize
+Physical size: 1080x1920
+@@displays
+Display 4619827259835644672 (HWC display 0): port=131 pnpId=QCM displayName=""
+Display 4619827259835644675 (HWC display 3): port=132 pnpId=QCM displayName=""
+@@battery
+100
+@@df
+/dev/fuse       465G 416G   49G  90% /storage/emulated
