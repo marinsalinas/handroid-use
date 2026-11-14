@@ -1,0 +1,47 @@
+name: Device profile request / contribution
+description: Propose a profile for a handheld (or other Android device) under skills/handroid-use/references/
+labels: [device-profile]
+body:
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      placeholder: Retroid Pocket 5
+    validations:
+      required: true
+  - type: textarea
+    id: discover
+    attributes:
+      label: "`handroid discover --json` output"
+      description: Remove the serial number and IP addresses.
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: displays
+    attributes:
+      label: Displays and refresh rate
+      description: "`handroid displays` output and which physical screen each id is."
+      render: text
+  - type: textarea
+    id: dont-touch
+    attributes:
+      label: Services an agent must never stop
+      description: Keymappers, input services, dual-screen helpers, launchers...
+  - type: textarea
+    id: measurements
+    attributes:
+      label: Measurements (optional)
+      description: "`handroid fps` / `thermals` output with app version, game, scene, duration and starting temperature. Real numbers only."
+      render: text
+  - type: textarea
+    id: quirks
+    attributes:
+      label: Quirks
+      description: Android-version limits, driver issues, apps that need special handling, anything that broke.
+  - type: checkboxes
+    id: pr
+    attributes:
+      label: Contribution
+      options:
+        - label: I can open a PR with `skills/handroid-use/references/<device>.md` (see CONTRIBUTING.md)
