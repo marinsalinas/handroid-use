@@ -1,5 +1,5 @@
-// Read-only smoke test against a real device. Skipped unless ANDROID_USE_LIVE=1.
-//   ANDROID_USE_LIVE=1 [ANDROID_SERIAL=<id>] [ANDROID_USE_LIVE_FPS=<package-part>] npm test
+// Read-only smoke test against a real device. Skipped unless HANDROID_LIVE=1.
+//   HANDROID_LIVE=1 [ANDROID_SERIAL=<id>] [HANDROID_LIVE_FPS=<package-part>] npm test
 // Only commands that do not change device state are allowed here; never add tap/swipe/key/type/
 // launch/install/push/pull to this file.
 import assert from "node:assert/strict";
@@ -9,17 +9,17 @@ import path from "node:path";
 import { test } from "node:test";
 import { CLI, tmpDir } from "./helpers.mjs";
 
-const LIVE = process.env.ANDROID_USE_LIVE === "1";
+const LIVE = process.env.HANDROID_LIVE === "1";
 const READ_ONLY = new Set(["discover", "status", "displays", "apps", "thermals", "ui", "shot", "fps"]);
 
 function cli(...argv) {
   assert.ok(READ_ONLY.has(argv[0]), `live tests must stay read-only (${argv[0]})`);
   const r = spawnSync(process.execPath, [CLI, ...argv], { encoding: "utf8", timeout: 120000 });
-  if (process.env.ANDROID_USE_LIVE_VERBOSE) console.log(`$ android-use ${argv.join(" ")}\n${r.stdout}${r.stderr}`);
+  if (process.env.HANDROID_LIVE_VERBOSE) console.log(`$ handroid ${argv.join(" ")}\n${r.stdout}${r.stderr}`);
   return { code: r.status, stdout: r.stdout, stderr: r.stderr };
 }
 
-test("live: read-only smoke test", { skip: !LIVE && "set ANDROID_USE_LIVE=1 to run against a real device" }, async (t) => {
+test("live: read-only smoke test", { skip: !LIVE && "set HANDROID_LIVE=1 to run against a real device" }, async (t) => {
   await t.test("discover --json", () => {
     const r = cli("discover", "--json");
     assert.equal(r.code, 0, r.stderr);
@@ -60,7 +60,7 @@ test("live: read-only smoke test", { skip: !LIVE && "set ANDROID_USE_LIVE=1 to r
     fs.rmSync(dir, { recursive: true, force: true });
   });
   await t.test("fps (3 s)", () => {
-    const r = cli("fps", process.env.ANDROID_USE_LIVE_FPS || "systemui", "3");
+    const r = cli("fps", process.env.HANDROID_LIVE_FPS || "systemui", "3");
     // A sleeping screen gives "no new frames"; an absent app gives "no layer". Both are fine here.
     assert.ok(r.code === 0 || /no SurfaceFlinger layer matches/.test(r.stderr), r.stderr);
     if (r.code === 0) assert.match(r.stdout, /^layer: /m);

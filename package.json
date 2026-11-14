@@ -1,34 +1,49 @@
 {
-  "name": "android-use",
+  "name": "handroid-use",
   "version": "0.1.0",
-  "description": "Computer use, but for Android: a cross-platform adb CLI and Claude Code skill to see, drive and benchmark Android devices.",
+  "description": "Computer use for Android handhelds: let AI agents see, drive and benchmark your Thor, Retroid or Odin. A dependency-free, cross-platform adb CLI plus a Claude Code skill.",
   "type": "module",
   "bin": {
-    "android-use": "bin/android-use.mjs"
+    "handroid": "bin/handroid.mjs"
   },
   "files": [
     "bin",
+    "lib",
     "skills",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
+  "scripts": {
+    "test": "node --test",
+    "lint": "node scripts/lint.mjs"
+  },
   "engines": {
     "node": ">=18"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marinsalinas/handroid-use.git"
+  },
+  "bugs": {
+    "url": "https://github.com/marinsalinas/handroid-use/issues"
+  },
+  "homepage": "https://github.com/marinsalinas/handroid-use#readme",
   "keywords": [
     "android",
     "adb",
+    "handheld",
+    "gaming-handheld",
     "agent",
+    "computer-use",
     "claude-code",
     "skill",
-    "mcp",
     "fps",
     "benchmark",
-    "handheld",
-    "ayn-thor"
+    "ayn-thor",
+    "retroid",
+    "odin"
   ],
-  "license": "MIT",
-  "scripts": {
-    "test": "node --test"
-  }
+  "author": "Marin Salinas",
+  "license": "MIT"
 }

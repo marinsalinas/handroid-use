@@ -1,30 +1,34 @@
 ---
-name: android-use
-description: Drive and inspect an Android device over adb, like computer use but for Android (phones, handhelds such as the AYN Thor / Retroid / Odin, TVs). Use when the user asks to look at, operate, install on, copy files to, benchmark (fps, temperatures, battery) or troubleshoot an Android device connected by USB or wireless debugging.
+name: handroid-use
+description: Computer use for Android handhelds. Drive, inspect and benchmark an Android device over adb, focused on gaming handhelds (AYN Thor, Retroid, Odin, Ayaneo) but working on any Android device (phones, TVs). Use when the user asks to look at, operate, install on, copy files to, measure fps / 1% lows / temperatures / battery on, or troubleshoot an Android device connected by USB or wireless debugging. Complements generic tools such as mobile-mcp.
 ---
 
-# Android use
+# handroid-use
 
-You control the device through the `android-use` CLI (Node 18+, no dependencies, Windows/Linux/macOS),
-optionally alongside the mobile-mcp MCP server. Run it as:
+Computer use for Android handhelds. You control the device through the `handroid` CLI (Node 18+, no
+dependencies, Windows/Linux/macOS). It complements generic Android tools such as the mobile-mcp MCP
+server (use both if available); what it adds is real performance numbers, handling of GPU-drawn game
+screens and multi-display devices, hash-verified file copies, and the safety rules below. Run it as:
 
 ```
-node <skill-dir>/../../bin/android-use.mjs <command>      # from a clone of the repo
-npx -y github:marinsalinas/android-use <command>          # without cloning
+node <skill-dir>/../../bin/handroid.mjs <command>         # from a clone of the repo
+npx -y github:marinsalinas/handroid-use <command>         # without cloning
+handroid <command>                                        # after npm link / a global install
 ```
 
-`android-use help` lists every command. It finds adb on its own (ADB, ANDROID_HOME, PATH, the
+`handroid help` lists every command. It finds adb on its own (ADB, ANDROID_HOME, PATH, the
 Android SDK, winget/Homebrew locations). With more than one device, pass `--serial <id>`.
+Every command exits nonzero on failure with the reason on stderr; check it.
 
 ## Start every session with discovery
 
-1. `android-use discover`: shows what is connected (model, Android version, SoC/GPU, number of
+1. `handroid discover`: shows what is connected (model, Android version, SoC/GPU, number of
    displays, battery, free space) and wireless-debugging devices on the LAN that are not attached yet.
    - `unauthorized`: ask the user to unlock the device and accept the USB debugging prompt.
-   - Device shown under "On the network": `android-use connect <ip:port>`. A pairing entry
+   - Device shown under "On the network": `handroid connect <ip:port>`. A pairing entry
      needs the code shown on the device, which the user reads to you, then
-     `android-use pair <ip:port> <code>`.
-2. `android-use status`: shows what app is in front and whether the screen is on.
+     `handroid pair <ip:port> <code>`.
+2. `handroid status`: shows what app is in front and whether the screen is on.
    - If the user is in the middle of using the device (a game in front, screen awake), **ask before
      tapping anything**. Measuring is fine.
 3. If the device has a profile in `references/`, read it before acting. For example, read
@@ -32,9 +36,9 @@ Android SDK, winget/Homebrew locations). With more than one device, pass `--seri
 
 ## The see–act loop
 
-1. **See.** Run `android-use ui` first; it is cheap and gives text plus tap centres. If it comes back
+1. **See.** Run `handroid ui` first; it is cheap and gives text plus tap centres. If it comes back
    empty or useless, the screen is drawn by the GPU (games, emulators, Steam Big Picture, many
-   Compose/Flutter launchers). In that case run `android-use shot` and read the PNG it prints.
+   Compose/Flutter launchers). In that case run `handroid shot` and read the PNG it prints.
 2. **Act.** Use one of these:
    - `tap "<text>"` when the element is in the tree.
    - `tap <x> <y>` with coordinates read from the screenshot, in device pixels. The PNG is at native
@@ -43,12 +47,12 @@ Android SDK, winget/Homebrew locations). With more than one device, pass `--seri
 3. **Verify.** See again after every action. Screens change asynchronously; wait 2–5 s after
    launching an app or after a tap that loads something.
 
-Multi-screen devices: run `android-use displays`, then `shot --display <id>`. Input goes to the default
+Multi-screen devices: run `handroid displays`, then `shot --display <id>`. Input goes to the default
 display unless the app is on the other one.
 
 ## Measuring performance
 
-`android-use fps <package-part> [seconds] [--wait]` reads real presented frames from SurfaceFlinger:
+`handroid fps <package-part> [seconds] [--wait]` reads real presented frames from SurfaceFlinger:
 - average fps
 - 1% low and 0.1% low
 - worst frame

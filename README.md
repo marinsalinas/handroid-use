@@ -1,14 +1,38 @@
-# android-use
+# handroid-use
 
-**Computer use, but for Android.** This is a small cross-platform CLI and a Claude Code skill. Together
-they let an AI agent see and drive an Android device over adb, install and copy files safely, and
-measure real game performance (fps, 1% lows, hitches, temperatures).
+[![CI](https://github.com/marinsalinas/handroid-use/actions/workflows/ci.yml/badge.svg)](https://github.com/marinsalinas/handroid-use/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Node >= 18](https://img.shields.io/badge/node-%3E%3D18-brightgreen)
+![Zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
 
-It was built while setting up an AYN Thor gaming handheld. It works with any Android device that adb
-can reach: phones, handhelds, Android TVs.
+**Computer use for Android handhelds: let AI agents see, drive and benchmark your Thor, Retroid or Odin.**
+
+*hand + android.* handroid-use is a small, dependency-free CLI (`handroid`) and a Claude Code skill.
+They let an AI agent discover an Android device over adb, see its screen, act on it, copy files
+safely and measure real game performance.
+
+It **complements** generic Android agent tools such as [mobile-mcp](https://github.com/mobile-next/mobile-mcp);
+it does not replace them. It is Android-only and works on any Android device adb can reach (phones,
+tablets, TVs), but its focus is **gaming handhelds** (AYN Thor, Retroid, Odin, Ayaneo...), where
+generic tools fall short:
+
+- **Real performance numbers.** Presented fps, 1% / 0.1% lows, worst frame and hitches straight from
+  SurfaceFlinger, plus CPU/GPU/battery temperatures and battery draw. Sampling is designed so the
+  measurement itself never invents hitches.
+- **GPU-drawn game screens.** Games, emulators and Steam Big Picture have no UI tree; the agent is told
+  to fall back to screenshots and coordinates.
+- **Multi-display devices.** Dual-screen handhelds such as the Thor: list displays and capture either one.
+- **Hash-verified file copies.** Every `push` is checked by sha256 on the device; app-private folders
+  get the `sync` + `chmod 660` their app needs; `install` refuses an APK whose hash does not match.
+- **Safety rules for agents.** Don't kill keymappers or input services, leave system settings and
+  logins to the human, and don't drive the screen while the user is playing.
+
+Device knowledge lives in profiles under [`skills/handroid-use/references/`](skills/handroid-use/references/);
+the [AYN Thor](skills/handroid-use/references/ayn-thor.md) is the first one. More are welcome
+(see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ```
-$ android-use discover
+$ handroid discover
 
 ABC123XYZ  [device, usb]
   AYN AYN Thor  -  Android 13 (SDK 33), arm64-v8a
@@ -16,66 +40,60 @@ ABC123XYZ  [device, usb]
   screen: 1080x1920  (2 displays: use shot --display <id>)   battery: 100%   free: 49G
 
 On the network (wireless debugging), not connected:
-  192.168.1.50:5555         -> android-use connect 192.168.1.50:5555
+  192.168.1.50:5555      -> handroid connect 192.168.1.50:5555
 ```
 
 ```
-$ android-use fps droiddeck 30 --wait
+$ handroid thermals
+temps: CPU 39.6 C | GPU 36.4 C | battery 28.0 C | battery 100% Full, 0 mA
+```
+
+```
+$ handroid fps droiddeck 30 --wait
 avg fps:   <n>   (<frames> frames, 30.0 s measured)
 1% low:    <n> fps   0.1% low: <n> fps
 worst:     <ms> ms   frames >33 ms: <n>   hitches >50 ms: <n>
 temps: CPU <c> C | GPU <c> C | battery <c> C | battery <pct>% <state>, <mA> mA
 ```
-(Output format. Hollow Knight under DroidDeck on an AYN Thor measured about 115 fps average against a 120 Hz cap.)
-
-## Why
-
-General-purpose Android MCP servers such as [mobile-mcp](https://github.com/mobile-next/mobile-mcp)
-already handle taps, swipes and screenshots well, and you can use them alongside this project. What
-they don't carry is the hard-won practical knowledge:
-
-- **GPU-drawn screens.** Games, emulators and Steam Big Picture expose no UI tree, so the agent has to
-  work from screenshots.
-- **Real performance numbers.** These come from SurfaceFlinger, sampled so that the measurement itself
-  does not invent hitches.
-- **Safe file handling.** Every copy is checked by hash on the device, and app-private folders get the
-  permissions their app needs.
-- **Rules for agents.** Don't force-stop keymapping services on handhelds. Leave system settings and
-  logins to the human. Don't drive the screen while the user is playing.
-- **Device profiles.** For example `references/ayn-thor.md`, which covers two displays, Adreno driver
-  quirks and Android 13's phantom-process limit.
+(Output format. Hollow Knight under DroidDeck on an AYN Thor measured about 115 fps average against
+a 120 Hz cap.)
 
 ## Requirements
 
-- Node.js 18+
-- adb (Android platform-tools). It is found automatically from `ADB`, `ANDROID_HOME`/`ANDROID_SDK_ROOT`, `PATH`, the Android SDK default location, winget (Windows) or Homebrew (macOS).
+- Node.js 18 or newer. No npm dependencies.
+- adb (Android platform-tools). It is found automatically from `ADB`, `ANDROID_HOME` /
+  `ANDROID_SDK_ROOT`, `PATH`, the Android SDK default location, winget (Windows) or Homebrew (macOS).
 - On the device: USB debugging or wireless debugging.
+- Windows, Linux or macOS.
 
 ## Install
 
 ### CLI
 
 ```
-npx -y github:marinsalinas/android-use discover
+npx -y github:marinsalinas/handroid-use discover
 ```
 
-Or clone it and run `node bin/android-use.mjs <command>` (or `npm link` to get `android-use` on your PATH).
+Or clone it and run `node bin/handroid.mjs <command>` (or `npm link` to get `handroid` on your PATH).
 
 ### Claude Code skill
 
-Copy or symlink `skills/android-use` into your skills folder:
+Copy or symlink `skills/handroid-use` into your skills folder:
 
 ```
 # macOS / Linux
-git clone https://github.com/marinsalinas/android-use ~/src/android-use
-ln -s ~/src/android-use/skills/android-use ~/.claude/skills/android-use
+git clone https://github.com/marinsalinas/handroid-use ~/src/handroid-use
+ln -s ~/src/handroid-use/skills/handroid-use ~/.claude/skills/handroid-use
 
 # Windows (PowerShell)
-git clone https://github.com/marinsalinas/android-use $HOME\src\android-use
-New-Item -ItemType Junction -Path $HOME\.claude\skills\android-use -Target $HOME\src\android-use\skills\android-use
+git clone https://github.com/marinsalinas/handroid-use $HOME\src\handroid-use
+New-Item -ItemType Junction -Path $HOME\.claude\skills\handroid-use -Target $HOME\src\handroid-use\skills\handroid-use
 ```
 
-### Optional: mobile-mcp next to it
+### Recommended companion: mobile-mcp
+
+[mobile-mcp](https://github.com/mobile-next/mobile-mcp) is a general-purpose mobile automation MCP
+server. Use it next to handroid-use:
 
 ```
 claude mcp add mobile-mcp --scope user -- npx -y @mobilenext/mobile-mcp@latest
@@ -99,21 +117,50 @@ claude mcp add mobile-mcp --scope user -- npx -y @mobilenext/mobile-mcp@latest
 | `thermals` | Maximum CPU/GPU/battery temperature and battery draw |
 | `fps <pkg> [s] [--wait]` | Real presented fps, 1%/0.1% lows, worst frame, hitches |
 
-With several devices, use `--serial <id>` or `ANDROID_SERIAL`.
+With several devices, use `--serial <id>` (or `-s <id>`) or `ANDROID_SERIAL`. Use `--` to pass text
+that starts with dashes: `handroid type -- --literal`.
+
+Every command exits with status 0 on success and 1 on failure (no device, several devices without
+`--serial`, hash mismatch, failed install, ...), with the reason on stderr, so agents and scripts can
+rely on the exit code.
 
 ## Notes on the fps measurement
 
 SurfaceFlinger keeps only the last 127 frame timestamps, which is about 1 s at 120 Hz. The CLI samples
-every 0.4 s *on the device*, in a single adb call, so consecutive windows overlap. When a window does
-not overlap, the gap is excluded rather than counted as a hitch. The number is frames **presented**:
-a compositor that repeats frames, such as gamescope or frame generation, can read higher than the
-game's own render rate.
+every 0.4 s *on the device*, in a single adb call, so consecutive windows overlap and no frame is
+counted twice. When a window does not overlap (adb was too slow), the gap is excluded and reported as
+a break rather than counted as a hitch. The 1% and 0.1% lows are the fps at the 99th and 99.9th
+percentile frame time.
 
-## Contributing device profiles
+The number is frames **presented**: a compositor that repeats frames, such as gamescope or frame
+generation, can read higher than the game's own render rate.
 
-Add `skills/android-use/references/<device>.md` with what you measured and what broke: app versions,
-scenes, numbers and temperatures. PRs welcome.
+The layer to measure is chosen automatically: the focused activity's game surface (`SurfaceView`)
+first, then its window. Matching is a case-insensitive substring of the layer name, so
+`fps droiddeck` works.
+
+## Testing
+
+```
+npm test          # unit + integration tests (node:test), no device needed
+npm run lint      # node --check on every file, and no runtime dependencies
+```
+
+The integration tests run the real CLI against a fake adb (`test/fake-adb.mjs`) that answers from
+captured fixtures, so CI needs no device. To run the read-only smoke test against a real device
+(it only runs `discover`, `status`, `displays`, `apps`, `thermals`, `ui`, `shot` and `fps`):
+
+```
+HANDROID_LIVE=1 npm test
+HANDROID_LIVE=1 HANDROID_LIVE_FPS=<package-part> ANDROID_SERIAL=<id> npm test
+```
+
+## Contributing
+
+Device profiles, bug reports and fixes are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to
+run the tests, add a device profile and the safety rules agents must follow, and
+[SECURITY.md](SECURITY.md) for reporting vulnerabilities.
 
 ## License
 
-MIT
+MIT, see [LICENSE](LICENSE).

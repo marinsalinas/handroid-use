@@ -1,4 +1,4 @@
-// End-to-end tests: run bin/android-use.mjs with ADB pointing at test/fake-adb.mjs.
+// End-to-end tests: run bin/handroid.mjs with ADB pointing at test/fake-adb.mjs.
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import fs from "node:fs";
@@ -30,8 +30,8 @@ test("discover: human-readable summary of the device and LAN services", () => {
   assert.match(r.stdout, /^ {2}SoC: QTI QCS8550 {3}GPU: Adreno \(TM\) 740$/m);
   assert.match(r.stdout, /screen: 1080x1920 {2}\(2 displays: use shot --display <id>\) {3}battery: 100% {3}free: 49G/);
   assert.match(r.stdout, /On the network \(wireless debugging\), not connected:/);
-  assert.match(r.stdout, /192\.168\.1\.60:5555 +-> android-use connect 192\.168\.1\.60:5555/);
-  assert.match(r.stdout, /192\.168\.1\.80:39001 +pairing code shown on the device -> android-use pair 192\.168\.1\.80:39001 <code>/);
+  assert.match(r.stdout, /192\.168\.1\.60:5555 +-> handroid connect 192\.168\.1\.60:5555/);
+  assert.match(r.stdout, /192\.168\.1\.80:39001 +pairing code shown on the device -> handroid pair 192\.168\.1\.80:39001 <code>/);
   assert.doesNotMatch(r.stdout, /192\.168\.1\.40/, "the USB-connected device's own TLS service is hidden");
   assert.equal(r.calls.length, 3, "one adb round trip per device");
 });
@@ -412,7 +412,7 @@ test("help works without adb; commands need it", () => {
   const missing = path.join(tmpDir(), "no-adb-here");
   let r = runCli(["help"], { env: { ADB: missing } });
   assert.equal(r.code, 0);
-  assert.match(r.stdout, /usage: android-use \[--serial <id>\] <command> \[args\]/);
+  assert.match(r.stdout, /usage: handroid \[--serial <id>\] <command> \[args\]/);
   assert.match(r.stdout, /adb: ADB is set to/);
   r = runCli(["status"], { env: { ADB: missing } });
   assert.equal(r.code, 1);

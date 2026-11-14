@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const FIXTURES = path.join(ROOT, "test", "fixtures");
-export const CLI = path.join(ROOT, "bin", "android-use.mjs");
+export const CLI = path.join(ROOT, "bin", "handroid.mjs");
 export const FAKE_ADB = path.join(ROOT, "test", "fake-adb.mjs");
 
 export const fixture = name => fs.readFileSync(path.join(FIXTURES, name), "utf8");
@@ -45,7 +45,7 @@ export function sampleWindows(all, startNs, count, everyMs = 400) {
 }
 
 /** Make a scratch dir for one test. */
-export function tmpDir(prefix = "android-use-test-") {
+export function tmpDir(prefix = "handroid-test-") {
   return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
 }
 
