@@ -29,6 +29,16 @@ Learned on a Thor Max (Snapdragon 8 Gen 2 = QCS8550, Adreno 740, Android 13, two
   Under sustained load, normal readings are about 55–70 °C on the CPU and 50–60 °C on the GPU.
 - The display runs at 120 Hz, so the fps ceiling is about 120.
 
+## Health check for a Thor
+```
+handroid doctor app:xyz.blacksheep.mjolnir app:rip.moth.cocoonshell phantom storage thermals:cpu=80
+```
+- Mjolnir (key mapper) should be running for hours. A short uptime with several starts means its key
+  filter is crash-looping, which adds input lag to every emulator. Tell the user; a reboot fixes it.
+- `phantom` on the Thor (Android 13): DroidDeck's "Fix it for me" disables the monitor, which doctor
+  reports as ok.
+- Storage near 90% is common: ROM sets and PC games are large.
+
 ## Things that break the device
 - **Keymapping/input services** (for example Mjolnir, or AYN's own key-mapper). Never force-stop
   them. A crash loop in the key filter adds input lag to every emulator until the device reboots.

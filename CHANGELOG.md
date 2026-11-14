@@ -6,6 +6,25 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-14
+
+### Added
+- `doctor [check ...]`: health checks chosen by argument, all run in one adb call, with `--json`,
+  `--strict` and `--list`. Checks: `storage[:warn%]`, `memory[:min%]`,
+  `thermals[:cpu=,gpu=,battery=]`, `battery`, `phantom`, `wireless`, `app:<pkg>` (uptime plus
+  starts/crashes/ANRs/kills from the event log, crash-loop detection) and `perms:<dir>`. Nothing in it
+  is device-specific.
+- `wait-for text|gone|app|awake|rendering` with `--timeout`.
+- `seq`: several validated inputs (tap, swipe, key, sleep) in one adb call.
+- `launch --display <id>`.
+- `logcat [pkg] [lines] [--errors] [--crash]`.
+- `bench`: fps, temperatures and battery per interval, a throttling verdict, `--csv` and `--json`.
+- `fps --json`.
+
+### Changed
+- The fps sampling loop runs on the device clock, so `fps 5` measures 5 s of wall time. Before, each
+  dumpsys call added about 0.2 s per sample.
+
 ## [0.2.0] - 2026-11-14
 
 Tested interactively on an AYN Thor (two screens, Android 13).
@@ -66,6 +85,7 @@ First public release.
 - A USB-connected device with wireless debugging on was listed as a LAN device to connect to.
 - Linux "no permissions" devices were parsed as state `no`; they now get a udev hint.
 
-[Unreleased]: https://github.com/marinsalinas/handroid-use/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/marinsalinas/handroid-use/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/marinsalinas/handroid-use/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/marinsalinas/handroid-use/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/marinsalinas/handroid-use/releases/tag/v0.1.0

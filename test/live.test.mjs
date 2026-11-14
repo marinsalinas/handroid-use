@@ -10,7 +10,7 @@ import { test } from "node:test";
 import { CLI, tmpDir } from "./helpers.mjs";
 
 const LIVE = process.env.HANDROID_LIVE === "1";
-const READ_ONLY = new Set(["discover", "status", "displays", "apps", "thermals", "ui", "shot", "fps"]);
+const READ_ONLY = new Set(["discover", "status", "displays", "apps", "thermals", "ui", "shot", "fps", "doctor", "logcat"]);
 
 function cli(...argv) {
   assert.ok(READ_ONLY.has(argv[0]), `live tests must stay read-only (${argv[0]})`);
@@ -38,9 +38,15 @@ test("live: read-only smoke test", { skip: !LIVE && "set HANDROID_LIVE=1 to run 
   await t.test("displays", () => {
     const r = cli("displays");
     assert.equal(r.code, 0, r.stderr);
-    assert.match(r.stdout, /Display \d+/);
+    assert.match(r.stdout, /^id +physical +name|Display \d+/m); // table, or SurfaceFlinger ids on old devices
   });
   await t.test("apps", () => assert.equal(cli("apps").code, 0));
+  await t.test("doctor", () => {
+    const r = cli("doctor", "--json");
+    assert.ok(r.code === 0 || r.code === 1, r.stderr);
+    assert.ok(JSON.parse(r.stdout).length >= 6);
+  });
+  await t.test("logcat", () => assert.equal(cli("logcat", "5").code, 0));
   await t.test("thermals", () => {
     const r = cli("thermals");
     assert.equal(r.code, 0, r.stderr);
@@ -48,8 +54,8 @@ test("live: read-only smoke test", { skip: !LIVE && "set HANDROID_LIVE=1 to run 
   });
   await t.test("ui", () => {
     const r = cli("ui");
-    // uiautomator can legitimately fail while the screen animates; it must say so on stderr
-    assert.ok(r.code === 0 || /uiautomator dump failed/.test(r.stderr), r.stderr);
+    // uiautomator can legitimately fail while the screen animates or sleeps; it must say so on stderr
+    assert.ok(r.code === 0 || /uiautomator dump failed|the screen is asleep/.test(r.stderr), r.stderr);
   });
   await t.test("shot", () => {
     const dir = tmpDir();

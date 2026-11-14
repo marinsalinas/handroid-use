@@ -112,12 +112,17 @@ claude mcp add mobile-mcp --scope user -- npx -y @mobilenext/mobile-mcp@latest
 | `shot [file] [--display id]` | Screenshot (PNG at native resolution) |
 | `ui [--all]` | Compact UI tree: text, description, tappable, centre |
 | `tap <x> <y>` / `tap "<text>"` | Tap by coordinates or by visible text |
-| `swipe`, `key`, `type`, `launch` | Input and app launch; `tap`/`swipe`/`key`/`type` take `--display <id>` |
+| `swipe`, `key`, `type`, `launch` | Input and app launch; all take `--display <id>` |
+| `seq "<step>" ...` | Several inputs (tap, swipe, key, sleep) in one adb call |
+| `wait-for text|gone|app|awake|rendering ...` | Poll until a condition holds (`--timeout`), instead of sleeping |
 | `apps [filter]` | Third-party packages with versions |
 | `install <apk> [--sha256 hex]` | Hash-checked install |
 | `push <local> <remote>` / `pull` | Hash-verified copy; app-private folders get `sync` and `chmod 660` |
 | `thermals` | Maximum CPU/GPU/battery temperature and battery draw |
-| `fps <pkg> [s] [--wait]` | Real presented fps, 1%/0.1% lows, worst frame, hitches |
+| `fps <pkg> [s] [--wait] [--json]` | Real presented fps, 1%/0.1% lows, worst frame, hitches |
+| `bench <pkg> [min] [--interval s] [--csv f] [--json]` | fps + temperatures + battery over time; flags thermal throttling |
+| `doctor [check ...]` | Health checks you choose: storage, memory, thermals, battery, phantom, wireless, `app:<pkg>`, `perms:<dir>` |
+| `logcat [pkg] [lines] [--errors] [--crash]` | An app's recent log, or its entries in the crash buffer |
 
 With several devices, use `--serial <id>` (or `-s <id>`) or `ANDROID_SERIAL`. Use `--` to pass text
 that starts with dashes: `handroid type -- --literal`.

@@ -43,9 +43,17 @@ Every command exits nonzero on failure with the reason on stderr; check it.
    - `tap "<text>"` when the element is in the tree.
    - `tap <x> <y>` with coordinates read from the screenshot, in device pixels. The PNG is at native
      resolution.
-   - `swipe`, `key BACK|HOME|WAKEUP`, `type "<text>"`, or `launch <package>`.
-3. **Verify.** See again after every action. Screens change asynchronously; wait 2–5 s after
-   launching an app or after a tap that loads something.
+   - `swipe`, `key BACK|HOME|WAKEUP`, `type "<text>"`, or `launch <package> [--display <id>]`.
+   - `seq "tap x y" "sleep 0.5" "tap x y" ...` runs several inputs in one adb call. Use it for
+     controls that hide after a second, or for a fixed key sequence.
+3. **Verify.** See again after every action. Screens change asynchronously. Don't guess with sleeps;
+   wait for the result:
+   - `wait-for text "<t>"` / `wait-for gone "<t>"`: an element appears or disappears in the UI tree.
+   - `wait-for app <pkg> [--display <id>]`: the app is in front.
+   - `wait-for awake`.
+   - `wait-for rendering <pkg>`: the app draws more than 15 fps (a game finished loading).
+
+   Each takes `--timeout <s>` (default 30) and exits 1 on timeout.
 
 Screen sleep: if `ui` says the screen is asleep, run `handroid key WAKEUP`. Many handhelds sleep after
 60 s, so a long pause between actions puts it back to sleep.
@@ -61,7 +69,7 @@ Screen sleep: if `ui` says the screen is asleep, run `handroid key WAKEUP`. Many
 - Touching a screen moves focus to it, and `key BACK`/`HOME` act on the focused screen. Pass
   `--display` to be sure.
 - Overlays that hide their controls after about a second (picture-in-picture, video players) need
-  both taps in one go. Use `handroid tap` to show the controls, then tap the control right away.
+  both taps in one call: `seq "tap <window>" "sleep 0.4" "tap <control>" --display <id>`.
 
 ## Measuring performance
 
@@ -73,11 +81,42 @@ Screen sleep: if `ui` says the screen is asleep, run `handroid key WAKEUP`. Many
 - temperatures and battery draw
 
 Use `--wait` when the user is about to start the game: it waits until the app renders, then measures.
+Add `--json` for machine-readable output.
+
+For long sessions, thermal throttling and battery life, use
+`handroid bench <package-part> [minutes] [--interval s] [--csv file] [--json]`. It prints one row per
+interval: fps, 1% low, worst frame, hitches, CPU/GPU/battery temperature, battery mA and %. The summary
+compares the first and last third of the run and flags a drop of 10% or more as likely throttling.
 For a fair A/B between two apps, use the same scene, the same duration and a similar starting
 temperature. Report the numbers. Don't call a result "smooth" from a screenshot.
 
 The fps figure counts frames presented to the screen. A compositor that repeats frames (gamescope,
 frame generation) can show a higher number than the game actually renders. Say so when that applies.
+
+## Diagnosing problems
+
+`handroid doctor [check ...]` runs only the checks you name, in one adb call. With no arguments it
+runs the general ones. `handroid doctor --list` explains each. Exit code: 1 if any check fails, or on
+warnings too with `--strict`.
+
+| Check | What it looks at |
+|---|---|
+| `storage[:warn%]` | /data usage (warn at 90%, fail at 97%) |
+| `memory[:min%]` | available RAM and swap |
+| `thermals[:cpu=85,gpu=80,battery=45]` | hottest sensors against the limits you set |
+| `battery` | charge, health, temperature |
+| `phantom` | the Android 12–13 child-process limit that kills Linux/Wine/Proton layers |
+| `wireless` | wireless debugging on/off and port |
+| `app:<package>` | installed, version, how long it has been running, starts/crashes/ANRs/kills (crash loops) |
+| `perms:<device dir>` | files the owning app may not be able to read |
+
+The code has no device knowledge. Which apps matter on a device comes from its profile in
+`references/`: for example, check the key-mapper and launcher packages a profile names with
+`doctor app:<pkg> app:<pkg>`. When an app misbehaves, add `handroid logcat <pkg> [lines] [--errors]`.
+It shows the app's own log while it runs, or its entries in the crash buffer after it died.
+
+Report what doctor found. Fixes that change system settings (the phantom limit, freeing storage)
+belong to the user. Explain them and let the user decide.
 
 ## Files and apps
 

@@ -365,10 +365,10 @@ const layerRule = { args: "shell echo '@@layers'", stdout: `@@layers\n${fixture(
 const BLAST = "SurfaceView[com.droiddeck.launcher/com.droiddeck.launcher.SessionActivity](BLAST)#3303";
 
 test("fps: measures the game's SurfaceView over overlapping samples", () => {
-  const windows = sampleWindows(stream(T0, 600, 1000 / 120), T0 + 50e6, 13);
+  const windows = sampleWindows(stream(T0, 600, 1000 / 120), T0 + 50e6, 14);
   const sampled = windows.map(w => latencyDump(w, { pending: 1 }) + "---\n").join("");
   const r = runCli(["fps", "droiddeck", "5"], { rules: [...singleDevice, layerRule,
-    { args: `shell i=0; while \\[ \\$i -lt 13 \\]; do dumpsys SurfaceFlinger --latency '${BLAST.replace(/[[\]().$]/g, "\\$&")}'`, stdout: sampled },
+    { args: `shell end=\\$\\(\\(\\$\\(date \\+%s\\)\\+5\\)\\); dumpsys SurfaceFlinger --latency '${BLAST.replace(/[[\]().$]/g, "\\$&")}'`, stdout: sampled },
     thermalsRule] });
   assert.equal(r.code, 0, r.stderr);
   assert.match(r.stdout, new RegExp(`^layer: ${BLAST.replace(/[[\]().$]/g, "\\$&")}$`, "m"));
@@ -378,7 +378,7 @@ test("fps: measures the game's SurfaceView over overlapping samples", () => {
 });
 
 test("fps: static screen and missing layer", () => {
-  let r = runCli(["fps", "droiddeck", "0.8"], { rules: [...singleDevice, layerRule, { args: "while", stdout: fixture("latency-idle.txt") + "---\n" + fixture("latency-idle.txt") + "---\n" }] });
+  let r = runCli(["fps", "droiddeck", "0.8"], { rules: [...singleDevice, layerRule, { args: "date .%s", stdout: fixture("latency-idle.txt") + "---\n" + fixture("latency-idle.txt") + "---\n" }] });
   assert.equal(r.code, 0, r.stderr);
   assert.match(r.stdout, /no new frames \(paused, menu or static screen\?\)/);
   r = runCli(["fps", "com.not.running", "2"], { rules: [...singleDevice, layerRule] });
@@ -501,7 +501,7 @@ test("fps ignores frames rendered before the measurement started", () => {
   const fresh = stream(T0 + 100e6, 180, 1000 / 60);
   const windows = sampleWindows([...old, ...fresh], T0, 9);
   const sampled = windows.map(w => latencyDump(w) + "---\n").join("");
-  const r = runCli(["fps", "droiddeck", "3"], { rules: [...singleDevice, layerRule, { args: "while", stdout: sampled }, thermalsRule] });
+  const r = runCli(["fps", "droiddeck", "3"], { rules: [...singleDevice, layerRule, { args: "date .%s", stdout: sampled }, thermalsRule] });
   assert.equal(r.code, 0, r.stderr);
   assert.match(r.stdout, /^avg fps: {3}60\.0 /m);
   assert.match(r.stdout, /hitches >50 ms: 0$/m);
