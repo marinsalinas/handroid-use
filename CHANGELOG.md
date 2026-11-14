@@ -6,6 +6,21 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-11-14
+
+Found while testing a PS3 emulator (ARMSX3) on an AYN Thor.
+
+### Added
+- `key --source gamepad|dpad|joystick|keyboard`. Emulators ignore keyboard events. With a gamepad
+  source, button names map to `KEYCODE_BUTTON_*`, so `key A --source gamepad` sends
+  `KEYCODE_BUTTON_A`. `seq` and the MCP `key`/`seq` tools take it too.
+- `wait-for rendering` and `fps --wait` take `--min-fps` (default 15) and `--stable` (default 3 s).
+
+### Fixed
+- `wait-for rendering` passed on a single burst of frames, such as an animated menu redrawing once.
+  It looked at one dump. It now requires new frames sustained over the whole `--stable` window,
+  counted against wall-clock time.
+
 ## [0.4.0] - 2026-11-14
 
 ### Added
@@ -106,7 +121,8 @@ First public release.
 - A USB-connected device with wireless debugging on was listed as a LAN device to connect to.
 - Linux "no permissions" devices were parsed as state `no`; they now get a udev hint.
 
-[Unreleased]: https://github.com/marinsalinas/handroid-use/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/marinsalinas/handroid-use/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/marinsalinas/handroid-use/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/marinsalinas/handroid-use/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/marinsalinas/handroid-use/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/marinsalinas/handroid-use/compare/v0.1.0...v0.2.0

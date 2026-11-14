@@ -44,6 +44,20 @@ handroid doctor app:xyz.blacksheep.mjolnir app:rip.moth.cocoonshell phantom stor
   and some use a user folder separate from the ROM library (Azahar, for example). Confirm the path in
   the emulator's settings first.
 
+## PS3 (ARMSX3) on the Thor: what was observed
+- ARMSX3 (`com.armsx3`) has a GPU-drawn UI. Its file picker and settings screens do have `ui` trees,
+  but long lists are virtualized: scroll until the entry appears before `tap "<text>"`.
+- It uses its own on-screen keyboard, so `type` does not reach it. Tap its keys with `seq`.
+- In game it ignores keyboard events. Use `key A --source gamepad`.
+- Encrypted disc ISOs fail with `Invalid or unsupported file format: EBOOT.BIN` and
+  `missing key file`. A PSN `.pkg` installs from the library (tap it), and its `.rap` goes in through
+  the "Install licence (.rap)" button. Reopen the app after installing a licence: the first boot right
+  after it failed with "Failed to locate the game license file".
+- Its data folder under Android/data is not writable over adb. Install through the app.
+- Uncharted 2 (NPUA80698) booted to its intro screens at 4–50 fps (1% low 2.6 fps) with the CPU at
+  86 °C. It then stopped with a "PPU Trap" error while compiling SPU code. The suggested "Stub PPU
+  Traps" setting is not exposed in ARMSX3 1.6.7.
+
 ## Things that break the device
 - **Keymapping/input services** (for example Mjolnir, or AYN's own key-mapper). Never force-stop
   them. A crash loop in the key filter adds input lag to every emulator until the device reboots.

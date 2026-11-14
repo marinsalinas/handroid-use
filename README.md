@@ -242,9 +242,18 @@ $ handroid swipe 620 950 620 450 400 --display 4
 ok
 ```
 
-#### `key <name|code>`
+#### `key <name|code> [--source gamepad|dpad|joystick|keyboard]`
 
 `BACK`, `HOME`, `WAKEUP`, `SLEEP`, `ENTER`, `DPAD_UP`, any `KEYCODE_*` name, or a number.
+
+Emulators and games usually **ignore keyboard events** and only read controller buttons. Use
+`--source gamepad`. With it, short button names map to `KEYCODE_BUTTON_*`: `A B X Y L1 R1 L2 R2 START
+SELECT MODE THUMBL THUMBR`.
+
+```
+$ handroid key A --source gamepad
+key KEYCODE_BUTTON_A (gamepad)
+```
 
 #### `type "<text>"`
 
@@ -258,6 +267,8 @@ Several inputs in **one** adb call. The steps are:
 - `swipe x1 y1 x2 y2 [ms]`
 - `key NAME`
 - `sleep s` (up to 30)
+
+`--source gamepad` applies to the `key` steps, for example `seq "key A" "sleep 1" "key START" --source gamepad`.
 
 Use it for controls that hide again before a second command could reach them, such as
 picture-in-picture or video player overlays, or for a fixed key sequence. Every step is validated
@@ -287,7 +298,11 @@ Polls until a condition holds, so agents don't guess with sleeps. It exits 1 on 
 | `gone "<t>"` | the text is no longer in the UI tree |
 | `app <package>` | the app is in front (on that screen with `--display`) |
 | `awake` | the screen is on |
-| `rendering <package>` | the app draws more than 15 fps, for example once a game finishes loading |
+| `rendering <package> [--min-fps 15] [--stable 3]` | the app's surface presents at least `--min-fps` new frames per second, sustained for `--stable` seconds |
+
+`rendering` counts real new frames over the whole window. A menu that redraws once, or a burst followed
+by silence, does not pass. A loading screen that animates steadily does pass, so after it use `shot`
+to confirm gameplay. `fps --wait` uses the same check.
 
 ```
 $ handroid wait-for app com.android.settings --display 4

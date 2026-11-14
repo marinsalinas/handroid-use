@@ -44,6 +44,8 @@ Every command exits nonzero on failure with the reason on stderr; check it.
    - `tap <x> <y>` with coordinates read from the screenshot, in device pixels. The PNG is at native
      resolution.
    - `swipe`, `key BACK|HOME|WAKEUP`, `type "<text>"`, or `launch <package> [--display <id>]`.
+   - **Games and emulators ignore keyboard keys.** Use `key A --source gamepad` (A/B/X/Y/START/SELECT/L1/R1...);
+     `seq` takes `--source gamepad` too. If a key does nothing in a game, this is the first thing to try.
    - `seq "tap x y" "sleep 0.5" "tap x y" ...` runs several inputs in one adb call. Use it for
      controls that hide after a second, or for a fixed key sequence.
 3. **Verify.** See again after every action. Screens change asynchronously. Don't guess with sleeps;
@@ -51,7 +53,8 @@ Every command exits nonzero on failure with the reason on stderr; check it.
    - `wait-for text "<t>"` / `wait-for gone "<t>"`: an element appears or disappears in the UI tree.
    - `wait-for app <pkg> [--display <id>]`: the app is in front.
    - `wait-for awake`.
-   - `wait-for rendering <pkg>`: the app draws more than 15 fps (a game finished loading).
+   - `wait-for rendering <pkg> [--min-fps 15] [--stable 3]`: the app keeps presenting frames. Loading
+     screens that animate count too, so confirm with `shot` before measuring.
 
    Each takes `--timeout <s>` (default 30) and exits 1 on timeout.
 
