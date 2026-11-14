@@ -1,0 +1,11 @@
+{
+  "name": "android-use",
+  "version": "0.1.0",
+  "description": "Computer use, but for Android: a cross-platform adb CLI and Claude Code skill to see, drive and benchmark Android devices.",
+  "type": "module",
+  "bin": { "android-use": "bin/android-use.mjs" },
+  "files": ["bin", "skills", "README.md", "LICENSE"],
+  "engines": { "node": ">=18" },
+  "keywords": ["android", "adb", "agent", "claude-code", "skill", "mcp", "fps", "benchmark", "handheld", "ayn-thor"],
+  "license": "MIT"
+}
